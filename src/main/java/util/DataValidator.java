@@ -58,13 +58,12 @@ public class DataValidator {
             System.out.println("WARN: PINL03: PIN length cannot exceed 16, resetting PIN length to 16.");
         }
         // Basic validations passed, ensure that the assigned PIN length and PIN offset length match, else return error
-        if (!pinRequest.isNaturalPin()) {
+        if (!pinRequest.isNaturalPin()
+            && !(Integer.parseInt(pinRequest.getPinLength()) == pinRequest.getPinOffset().length())) {
             System.out.println("ERRR: PINOFF: PIN length and number of digits in offset must match.");
-            return Integer.parseInt(pinRequest.getPinLength()) == pinRequest.getPinOffset().length();
-        } else{
-            return true;
+            System.exit(8);
         }
-
+            return true;
     }
 
     /**

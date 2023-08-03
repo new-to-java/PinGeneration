@@ -14,6 +14,5 @@ public class PinResponse {
     private String pin;
     private String pinLength;
     private String pinOffset;
-    private String responseCode;
 
 }

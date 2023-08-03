@@ -8,9 +8,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * This class generates an IBM 3624 compatible PIN and Offset
@@ -39,8 +36,6 @@ public class IBM3624Pin {
         CryptoFunctions cryptoFunctions = new CryptoFunctions();
 
         if (DataValidator.validatePinRequest(pinRequest)){
-            System.out.println("Valid input data");
-            System.out.println(derivePinValidationData(pinRequest.getPan()));
             cryptoFunctions.setKey(pinRequest.getKey());
             cryptoFunctions.setInputData(derivePinValidationData(pinRequest.getPan()));
             pinResponse.setPin(calculateIntermediatePin(cryptoFunctions.tDEAEncrypt().toUpperCase(),
@@ -52,9 +47,6 @@ public class IBM3624Pin {
             } else {
                 pinResponse.setPin(pinResponse.getPin().substring(0, Integer.parseInt(pinRequest.getPinLength())));
             }
-            pinResponse.setResponseCode("SUCCESS");
-        } else {
-            pinResponse.setResponseCode("INVDATA");
         }
 
         return pinResponse;
@@ -67,7 +59,7 @@ public class IBM3624Pin {
     private String derivePinValidationData(String pan){
 
         int panLength = pan.length();
-        if(panLength > 15) return pan + "0".repeat(16 - panLength);
+        if(panLength > 15) return pan + PINConstants.PAD_CHAR.repeat(16 - panLength);
         else return pan.substring(panLength - 16, panLength);
 
     }
@@ -81,7 +73,6 @@ public class IBM3624Pin {
      * @return Derived intermediate PIN
      */
     private String calculateIntermediatePin(String encryptedPinVerificationData, String [] decimalisationTable){
-        System.out.println(encryptedPinVerificationData);
         for (int i = 0; i < encryptedPinVerificationData.length(); i++){
             for (int j = 0; j < encryptedPinVerificationData.length(); j++){
                 if (decimalisationTable[j].contains(String.valueOf(encryptedPinVerificationData.charAt(i)))) {
@@ -92,7 +83,7 @@ public class IBM3624Pin {
             }
 
         }
-        System.out.println(encryptedPinVerificationData);
+
         return encryptedPinVerificationData;
 
     }
@@ -114,6 +105,63 @@ public class IBM3624Pin {
         }
 
         return offsetAdjustedPin.toString();
+
+    }
+
+    /**
+     * Derive an IBM PIN offset from a natural PIN and customer selected PIN
+     * @param customerPin Customer selected PIN
+     * @param naturalPin Natural PIN
+     * @return Derived PIN Offset value
+     */
+    public String deriveOffset(String customerPin, String naturalPin){
+
+        StringBuilder pinOffset = new StringBuilder();
+
+        if (customerPin.length() != naturalPin.length()){
+            System.out.println("ERRR: NCPI01: Natural PIN and Customer PIN length must match.");
+            System.exit(8);
+        }
+
+        for(int i = 0; i < naturalPin.length(); i++){
+            int cpinDigit = Integer.parseInt(customerPin.substring(i, i + 1));
+            int nPinDigit = Integer.parseInt(naturalPin.substring(i, i + 1));
+            if (cpinDigit < nPinDigit) {
+                cpinDigit += 10;
+            }
+            pinOffset.append(cpinDigit - nPinDigit);
+        }
+
+        return pinOffset.toString();
+
+    }
+
+    /** offset
+     * Derive a Natural PIN from a customer selected PIN and PIN
+     * @param customerPin Customer selected PIN
+     * @param pinOffset PIN Offset
+     * @return Natural PIN
+     */
+
+    public String deriveNaturalPin(String customerPin, String pinOffset){
+
+        StringBuilder naturalPin = new StringBuilder();
+
+        if (customerPin.length() != pinOffset.length()){
+            System.out.println("ERRR: OFFC01: Customer PIN and PIN offset length must match.");
+            System.exit(8);
+        }
+
+        for(int i = 0; i < pinOffset.length(); i++){
+            int cpinDigit = Integer.parseInt(customerPin.substring(i, i + 1));
+            int pinOffsetDigit = Integer.parseInt(pinOffset.substring(i, i + 1));
+            if (cpinDigit < pinOffsetDigit) {
+                cpinDigit += 10;
+            }
+            naturalPin.append(cpinDigit - pinOffsetDigit);
+        }
+
+        return naturalPin.toString();
 
     }
 

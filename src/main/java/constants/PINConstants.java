@@ -8,6 +8,8 @@ public class PINConstants {
     "7:7","8:8", "9:9", "A:0", "B:1", "C:2", "D:3", "E:4", "F:5"};
     public static final int MIN_PIN_LENGTH = 4;
     public static final int MAX_PIN_LENGTH = 16;
-    public static final int CHECK_DATA_LENGTH = 16;
     public static final String PAD_CHAR = "0";
+    public static final int MAX_PVV_PIN_LEN = 4;
+    public static final int MAX_PVV_PAN_LEN = 11;
+
 }
