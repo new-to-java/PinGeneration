@@ -9,5 +9,5 @@ public class PINConstants {
     public static final int MIN_PIN_LENGTH = 4;
     public static final int MAX_PIN_LENGTH = 16;
     public static final int CHECK_DATA_LENGTH = 16;
-    public static final String PAD_WITH_F = "F";
+    public static final String PAD_CHAR = "0";
 }

@@ -11,9 +11,9 @@ import lombok.Setter;
 @Setter
 public class PinResponse {
 
-    String pin;
-    int pinLength;
-    String pinOffset;
-    String responseCode;
+    private String pin;
+    private String pinLength;
+    private String pinOffset;
+    private String responseCode;
 
 }

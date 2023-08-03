@@ -1,6 +1,7 @@
 package org.bc;
 
 import dto.PinRequest;
+import dto.PinResponse;
 import util.IBM3624Pin;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -18,12 +19,17 @@ public class Main
             NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         IBM3624Pin ibm3624Pin = new IBM3624Pin();
         PinRequest pinRequest = new PinRequest();
-        pinRequest.setPinLength("4");
-        pinRequest.setPinOffset("0000");
+        pinRequest.setPinLength("6");
+        pinRequest.setPinOffset("123456");
         pinRequest.setPan("1234567899876543");
         pinRequest.setKey("0123456789ABCDEFFEDCBA9876543210");
+        pinRequest.setNaturalPin(false);
         //pinRequest.setDecimalisationTable(PINConstants.DEFAULT_DECIMALISATION_TABLE);
-        ibm3624Pin.generateIBM3624Pin(pinRequest);
+        PinResponse pinResponse = ibm3624Pin.generateIBM3624Pin(pinRequest);
+        System.out.println(pinResponse.getResponseCode());
+        System.out.println(pinResponse.getPin());
+        System.out.println(pinResponse.getPinLength());
+        System.out.println(pinResponse.getPinOffset());
 
     }
 
