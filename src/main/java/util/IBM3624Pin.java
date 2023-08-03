@@ -38,7 +38,7 @@ public class IBM3624Pin {
         PinResponse pinResponse = new PinResponse();
         CryptoFunctions cryptoFunctions = new CryptoFunctions();
 
-        if (validatePinRequest(pinRequest)){
+        if (DataValidator.validatePinRequest(pinRequest)){
             System.out.println("Valid input data");
             System.out.println(derivePinValidationData(pinRequest.getPan()));
             cryptoFunctions.setKey(pinRequest.getKey());
@@ -58,51 +58,6 @@ public class IBM3624Pin {
         }
 
         return pinResponse;
-
-    }
-
-    private boolean validatePinRequest(PinRequest pinRequest){
-
-        List<Boolean> validRequest = new ArrayList<>();
-        validRequest.add(DataValidator.isNumeric(pinRequest.getPan()));
-        validRequest.add(DataValidator.isNumeric(pinRequest.getPinOffset()));
-        validRequest.add(DataValidator.isNumeric(pinRequest.getPinLength()));
-        validRequest.add(DataValidator.isHexadecimal(pinRequest.getKey()));
-        if (pinRequest.getDecimalisationTable() == null){
-                System.out.println("WARN: DECE01: No decimalisation table supplied, using system default table.");
-                System.out.println("Default Table: " + Arrays.toString(PINConstants.DEFAULT_DECIMALISATION_TABLE));
-                pinRequest.setDecimalisationTable(PINConstants.DEFAULT_DECIMALISATION_TABLE);
-        } else if ((pinRequest.getDecimalisationTable().length != 16)) {
-            System.out.println("WARN: DECE02: Invalid decimalisation table supplied, using system default table.");
-            System.out.println("Default Table: " + Arrays.toString(PINConstants.DEFAULT_DECIMALISATION_TABLE));
-            pinRequest.setDecimalisationTable(PINConstants.DEFAULT_DECIMALISATION_TABLE);
-        }
-        validRequest.add(DataValidator.isHexadecimal(Arrays.toString(
-                pinRequest.getDecimalisationTable()).replaceAll("[\\[\\]s :,]", "")));
-        //Check if any of the validations have failed, if yes, return false, else at end of loop, return true
-        for (Boolean aBoolean : validRequest) {
-            if (!aBoolean) {
-                return false;
-            }
-        }
-        if (pinRequest.getPinLength().length() > 2){
-            pinRequest.setPinLength(Integer.toString(PINConstants.MAX_PIN_LENGTH));
-            System.out.println("WARN: PINL01: PIN length cannot exceed 16, resetting PIN length to 16.");
-        }
-        if (Integer.parseInt(pinRequest.getPinLength()) < PINConstants.MIN_PIN_LENGTH) {
-            pinRequest.setPinLength(Integer.toString(PINConstants.MIN_PIN_LENGTH));
-            System.out.println("WARN: PINL02: PIN length cannot be less than 4, resetting PIN length to 4.");
-        } else if (Integer.parseInt(pinRequest.getPinLength()) > PINConstants.MAX_PIN_LENGTH) {
-            pinRequest.setPinLength(Integer.toString(PINConstants.MAX_PIN_LENGTH));
-            System.out.println("WARN: PINL03: PIN length cannot exceed 16, resetting PIN length to 16.");
-        }
-        // Basic validations passed, ensure that the assigned PIN length and PIN offset length match, else return error
-        if (!pinRequest.isNaturalPin()) {
-            System.out.println("ERRR: PINOFF: PIN length and number of digits in offset must match.");
-            return Integer.parseInt(pinRequest.getPinLength()) == pinRequest.getPinOffset().length();
-        } else{
-            return true;
-        }
 
     }
 

@@ -19,8 +19,8 @@ public class Main
             NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         IBM3624Pin ibm3624Pin = new IBM3624Pin();
         PinRequest pinRequest = new PinRequest();
-        pinRequest.setPinLength("6");
-        pinRequest.setPinOffset("123456");
+        pinRequest.setPinLength("12");
+        pinRequest.setPinOffset("123456789012");
         pinRequest.setPan("1234567899876543");
         pinRequest.setKey("0123456789ABCDEFFEDCBA9876543210");
         pinRequest.setNaturalPin(false);
